@@ -6,7 +6,15 @@ import ControlBar from "./component/ControlBar";
 import Layout, {Content} from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 
+import { AppContext } from "./component/AppContext";
+
 function App() {
+  const [label, setLabel] = useState([]);
+  const value = useMemo(
+    () => ({ label, setLabel }), 
+    [label]
+  );
+
   return (
       <div className="App">
       <h2>Management System</h2>
@@ -22,11 +30,11 @@ function App() {
                   defaultOpenKeys={['sub1']}
                   style={{ height: '100%' }}
               >
-                <ControlBar />
+                <AppContext.Provider value={value}><ControlBar /></AppContext.Provider>
               </Menu>
             </Sider>
             <Content className="container" style={{ padding: '0 16px', minHeight: 280}}>
-              <Picture />
+              <AppContext.Provider value={value}><Picture /></AppContext.Provider>
             </Content>
           </Layout>
         </Content>

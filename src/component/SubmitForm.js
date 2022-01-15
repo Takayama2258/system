@@ -1,7 +1,8 @@
 import React from 'react';
 import 'antd/dist/antd.min.css';
 import './css/SubmitForm.css';
-import { Form, Input, Button, Select } from 'antd';
+import $ from 'jquery' ;
+import {Form, Input, Button, Select, Alert} from 'antd';
 require('./Picture');
 
 
@@ -24,7 +25,36 @@ const tailLayout = {
 class SubmitForm extends React.Component {
   formRef = React.createRef();
   onFinish = (values) => {
-    console.log(values);
+
+    var details = {
+      'sourceId': parseInt(values['source']),
+      'destinationId': parseInt(values['destination']),
+      'weight': 3
+    };
+
+    let formBody = [];
+    for (let property in details) {
+      let encodedKey = encodeURIComponent(property);
+      let encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+      body: formBody
+    }
+    // 数据库
+    fetch( `http://localhost:3000/v1/admin/add/connection`, requestOptions)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Success");
+      alert("Successfully Submit!")
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    })
   };
   onReset = () => {
     this.formRef.current.resetFields();
@@ -35,16 +65,10 @@ class SubmitForm extends React.Component {
       gender: 'male',
     });
   };
-  onSet = () => {
-    const select = document.getElementById("source");
-    let labels=["1","2","3"];
-    for (let index = 0; index < labels.length; index++) {
-      const option = document.createElement("Option");
-      option.value=labels[index];
-      console.log(option);
-      select.appendChild(option);
-    }
-  }
+  onSubmit = (values) => {
+
+  };
+  labels=["1","2","3"];
 
 
 
@@ -65,11 +89,8 @@ class SubmitForm extends React.Component {
                 placeholder="Select a option and change input text above"
                 id="source"
                 allowClear
+                options={this.labels.map(a=>({ value: a, label: a}))}
             >
-
-              <Option value="male">male</Option>
-              <Option value="female">female</Option>
-              <Option value="other">other</Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -85,10 +106,8 @@ class SubmitForm extends React.Component {
                 placeholder="Select a option and change input text above"
                 id="destination"
                 allowClear
+                options={this.labels.map(a=>({ value: a, label: a}))}
             >
-              <Option value="male">male</Option>
-              <Option value="female">female</Option>
-              <Option value="other">other</Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -112,7 +131,7 @@ class SubmitForm extends React.Component {
             }
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" onClick={this.onSubmit}>
               Submit
             </Button>
             <Button htmlType="button" onClick={this.onReset}>
@@ -120,9 +139,6 @@ class SubmitForm extends React.Component {
             </Button>
             <Button type="link" htmlType="button" onClick={this.onFill}>
               Fill form
-            </Button>
-            <Button htmlType="set" onClick={this.onSet}>
-              Set
             </Button>
           </Form.Item>
         </Form>

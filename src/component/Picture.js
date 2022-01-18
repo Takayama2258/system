@@ -2,6 +2,8 @@ import React from "react";
 import $ from 'jquery' ;
 import locationIcon from '../img/location.png';
 
+const {label, setLabel} = useContext(AppContext);
+
 var labels = [];
 function Picture(){
   function handleClick(e) {
@@ -19,6 +21,9 @@ function Picture(){
     // deleteHotspot();
     addHotspot(hotspot);
     displayHotspot();
+
+    //更新context的label
+    setLabel(labels);
 
   }
 
